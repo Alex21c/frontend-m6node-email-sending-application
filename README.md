@@ -2,10 +2,13 @@
 ![](thumbnail.png)
 
 ## Hosted Version of the Project:
-[m6node-email-sending-application](https://m6node-email-sending-application.vercel.app/)
+[Email sending application](https://frontend-m6node-email-sending-application.vercel.app/)
+
+## BackEnd GitHub Repository Link
+[BackEnd Email sending application (Module #6, MERN Stack)](https://github.com/Alex21c/m6node-email-sending-application)
 
 ## Objectives
-+ Created a Basic Form and Send Mail Using Nodemailer.
++ Created a Basic Form collecting Username and email, then will send stock market quote to the email address using using Nodemailer.
 + Learnt fundamentals of building a simple web form and using Nodemailer to send emails. 
 + Handling POST requests from the form
 + Parsing form data using body-parser or Express's built-in middleware.
@@ -16,20 +19,11 @@
 + Handling validation errors on the server side
 + Providing user feedback for successful and failed submissions
 
-
-## How to install and run in yours local machine
-```bash
-npm install
-npm run start
-```
-
 ## Tech. Stack Used:
-+ [React](https://react.dev/)
-+ [TailwindCSS](https://tailwindcss.com/)
-+ [Google Fonts](https://fonts.google.com/)
-+ [Font Awesome](https://fontawesome.com/icons/)
++ [MongoDB](https://www.mongodb.com/) 
++ [ExpressJS](https://expressjs.com/) 
++ [ReactJS](https://react.dev/) 
++ [NodeJS](https://nodejs.org/en/) 
 
 ## Author
 [Abhishek kumar](https://www.linkedin.com/in/alex21c/), ([Geekster](https://geekster.in/) MERN Stack FS-14 Batch)
-
-
