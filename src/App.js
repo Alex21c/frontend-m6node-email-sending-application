@@ -49,7 +49,7 @@ function App() {
     }
   
   }
-  
+
   async function performHandshakeWithServer(apiURLs, updateStateHandshake){
     try {
       console.log('performing handshake with server');
@@ -84,6 +84,12 @@ function App() {
       console.log('unable to perform handshake with the server!');
     }
   }
+
+  // update local stroage with handshake status
+  useEffect(()=>{
+    localStorage.setItem('Alex21CemailSendingStockMarketQuote', JSON.stringify(stateHandshake));
+
+  }, [stateHandshake]);
 
   // initially perform a handshake with the render server, if it has been spin off
   useEffect(()=>{
