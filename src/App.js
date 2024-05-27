@@ -1,7 +1,7 @@
 import './App.css';
 import './Assests/fontAwesomeProIcons/fontAwesomeIcons.css';
 import SuccessAndErrorMsg, {showError, hideError, showSuccess} from "./Components/Notifications/SuccessAndErrorMsg";
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 function App() {
   const refEmail = useRef(null);
@@ -10,12 +10,109 @@ function App() {
   let [stateIsEmailBeingSent, setStateIsEmailBeingSent] = useState(false); 
   let [stateEmailSentResponse, setStateEmailSentResponse] = useState(null);
 
+  // fetching initial state from local storage
+    let initialHandshakState = localStorage.getItem('Alex21CemailSendingStockMarketQuote');
+    if(initialHandshakState){
+      initialHandshakState = JSON.parse(initialHandshakState);
+    }else{
+      initialHandshakState = {
+        handshakeInfo: {
+          success: false,
+          timestamp: new Date()
+        }
+      };
+    }
+    let [stateHandshake, updateStateHandshake] = useState(initialHandshakState)
+
   const apiURLs= {
     localhost:{
       'send-email': "http://localhost:4000/api/v1/send-email/stock-market-quote",
       'handshake': "http://localhost:4000/api/v1/send-email/handshake/hello",
+    },
+    render:{
+      'send-email': "https://m6node-email-sending-application.onrender.com/api/v1/send-email/stock-market-quote",
+      'handshake': "https://m6node-email-sending-application.onrender.com/api/v1/send-email/handshake/hello",
+    }    
+  }
+  function isTimeStamp10MinutesOlder(previousTimeStamp){
+    // console.log(previousTimeStamp);
+    previousTimeStamp = new Date(previousTimeStamp)
+    let currentTimestamp = new Date();
+    let tenMinues = 10*60*1000;
+    // let tenMinues = 1000;
+    let difference = currentTimestamp- previousTimeStamp;
+    // console.log(difference)
+    if(difference > tenMinues){
+      return true;
+    }else{
+      return false;
+    }
+  
+  }
+  
+  async function performHandshakeWithServer(apiURLs, updateStateHandshake){
+    try {
+      console.log('performing handshake with server');
+      // throw new Error('testing')
+        
+      const requestOptions = {
+        method: "GET"
+      };    
+      let response = await fetch(apiURLs.render.handshake, requestOptions);
+      if(!response){       
+        throw new Error("Unable to to process current request!");
+      }
+      response = await response.json();        
+      // console.log(response);
+      // save it into state   
+        const handshakeInfo= {
+          success: response.success,
+          timestamp: new Date()
+        };
+  
+      // console.log(handshakeInfo);
+      updateStateHandshake(previousState=>{
+        return {
+          ...previousState,
+          handshakeInfo: handshakeInfo 
+        }
+      })
+  
+  
+    } catch (error) {    
+      console.log("ERROR: " + error.message);
+      console.log('unable to perform handshake with the server!');
     }
   }
+
+  // initially perform a handshake with the render server, if it has been spin off
+  useEffect(()=>{
+    // first check the local strogage about when was the last handshake performed
+    // if more than 10 minutes have been passed then re perform handshake
+      
+    const makeAsyncCall = async ()=>{        
+      await performHandshakeWithServer(apiURLs, updateStateHandshake);
+    };
+  
+    let doIneedToPerformHandshake = false;
+    if(stateHandshake?.handshakeInfo){      
+      // is it fresh or 10 minutes have been passed
+        if(isTimeStamp10MinutesOlder(stateHandshake?.handshakeInfo?.timestamp)){
+          doIneedToPerformHandshake=true;
+          // console.log('isTimeStamp10MinutesOlder')
+        }
+      // just check is last time there was failure response in handshake?
+        else if(stateHandshake.handshakeInfo.success === false){
+          doIneedToPerformHandshake=true;
+        }
+        
+    }
+
+    if(doIneedToPerformHandshake){
+      makeAsyncCall();
+    }
+    
+  }, []);
 
   let [stateSuccessAndErrorMsg, updateStateSuccessAndErrorMsg] = useState({
     style: {
@@ -60,7 +157,7 @@ function App() {
        
   
           }
-          let response = await fetch(apiURLs.localhost['send-email'], options);
+          let response = await fetch(apiURLs.render['send-email'], options);
           if(response){
             response = await response.json();
             if(response.success){
